@@ -151,7 +151,7 @@ public:
 int main() {
     display_ssd1306_t ssddisp;
     for (int y = 0; y < 50; y+= 14)
-    ssddisp.print_digit_string(0,y,"0123456789.: 01");
+    ssddisp.print_digit_string(0,y,"012.345.678.901");
     ssddisp.blit();
     return 0;
 }
