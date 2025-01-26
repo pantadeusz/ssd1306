@@ -30,9 +30,11 @@ SOFTWARE.
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 #include <iostream>
 
 // 7x13
@@ -123,7 +125,8 @@ public:
         print_bitmap(x,y,p);
     }
 
-    void print_digit_string(int x, int y, const char *digits) {
+    void print_digit_string(int x, int y, const std::string s) {
+        const char *digits = s.c_str();
         while (*digits) {
             print_digit(x,y,*digits);
             digits++;
@@ -148,10 +151,38 @@ public:
 
 
 
+std::vector<std::string> get_local_addresses() {
+    std::vector<std::string> ipv4_addresses;
+    struct ifaddrs *ifaddr, *ifa;
+    int family;
+    if (getifaddrs(&ifaddr) == -1) {
+        throw std::invalid_argument("Error: getifaddrs failed");
+        return ipv4_addresses;
+    }
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr == NULL)
+            continue;
+        family = ifa->ifa_addr->sa_family;
+        if (family == AF_INET) {
+            struct sockaddr_in *ipv4_addr = (struct sockaddr_in *)ifa->ifa_addr;
+            char ip_str[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, &(ipv4_addr->sin_addr), ip_str, INET_ADDRSTRLEN);
+            if (std::string(ip_str) != std::string("127.0.0.1"))
+                ipv4_addresses.push_back(ip_str);
+        }
+    }
+    freeifaddrs(ifaddr);
+    return ipv4_addresses;
+}
+
+
 int main() {
     display_ssd1306_t ssddisp;
-    for (int y = 0; y < 50; y+= 14)
-    ssddisp.print_digit_string(0,y,"012.345.678.901");
+    int y = 0;
+    for (auto s : get_local_addresses()) {
+        ssddisp.print_digit_string(0,y,s);
+        y+= 14;
+    }
     ssddisp.blit();
     return 0;
 }
