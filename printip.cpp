@@ -228,7 +228,7 @@ public:
         //    i = 12;
         //}
         if (i > 128) i = 0;
-        p = digits+13*i;
+        p = digits+14*i;
         print_bitmap(x,y,p);
     }
 
