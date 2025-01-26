@@ -92,7 +92,7 @@ public:
     void print_bitmap(int x0, int y0, const unsigned char *p) {
         for (int y = 0; y < 13; y++) {
             int row = p[y];
-            for (int x = 7; x >= 0; x--) {
+            for (int x = 0; x < 8; x++) {
                 int val = row & 1;
                 put_bit(x+x0,y+y0,val);
                 row = row >> 1;
