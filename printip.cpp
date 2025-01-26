@@ -285,8 +285,8 @@ std::vector<std::string> get_local_addresses() {
 
 int main() {
     display_ssd1306_t ssddisp;
+    ssddisp.print_digit_string(0,0,"Witaj w swiecie     ");
     int y = 14;
-    ssddisp.print_digit_string(0,y,"Witaj w swiecie     ");
     for (auto s : get_local_addresses()) {
         ssddisp.print_digit_string(0,y,s);
         y+= 14;
